@@ -15,13 +15,18 @@ import Echart from './components/echart/index.vue'
 import ItemWrap from './components/item-wrap/item-wrap.vue'
 import Message from './components/message/message.vue'
 import Reacquire from './components/reacquire/reacquire.vue'
+import Slide from "@/components/carousel-3d/Slide";
+import Carousel3d from "@/components/carousel-3d/Carousel3d";
 import Messages from './components/message/message'
 import "vue-easytable/libs/theme-default/index.css";
 import  '@/assets/css/public.scss'
 import "@/assets/css/index.scss"
 
 import * as filters from '@/directives/filters'
-
+const install = (Vue) => {
+  Vue.component('carousel3d', Carousel3d)
+  Vue.component('slide', Slide)
+}
 require('./mock/mock')//是否使用mock
 Vue.config.productionTip = false;
 // 自定义组件
@@ -44,7 +49,10 @@ Vue.use(capsuleChart)
 // 全局数据过滤器
 Object.keys(filters).forEach(k => Vue.filter(k, filters[k]));
 new Vue({
+  install,
   router,
+  Carousel3d,
+  Slide,
   store,
   render: h => h(App)
 }).$mount("#app");

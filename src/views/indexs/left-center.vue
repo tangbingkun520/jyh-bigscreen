@@ -1,231 +1,195 @@
 <!--
  * @Author: daidai
- * @Date: 2022-02-28 16:16:42
+ * @Date: 2022-03-01 15:27:58
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2022-04-28 09:46:18
- * @FilePath: \web-pc\src\pages\big-screen\view\indexs\left-center.vue
+ * @LastEditTime: 2022-05-07 11:24:14
+ * @FilePath: \web-pc\src\pages\big-screen\view\indexs\right-center.vue
 -->
 <template>
-  <Echart id="leftCenter" :options="options" class="left_center_inner" v-if="pageflag" ref="charts" />
-  <Reacquire v-else @onclick="getData" style="line-height:200px">
-    重新获取
-  </Reacquire>
+  <div v-if="pageflag" class="right_center_wrap beautify-scroll-def" :class="{ 'overflow-y-auto': !sbtxSwiperFlag }">
+    <component :is="components" :data="list" :class-option="defaultOption">
+      <ul class="right_center ">
+        <li class="right_center_item" v-for="(item, i) in list" :key="i">
+          <div class="flexm">
+            <div class="inner_right">
+              <div class="flex">
+                <div class="info">
+                  <span class="labels ">设备ID：</span>
+                  <span class="contents zhuyao"> {{ item.gatewayno }}</span>
+                </div>
+              </div>
+              <div class="flex">
+                <div class="info">
+                  <span class="labels ">设备ID：</span>
+                  <span class="contents zhuyao"> {{ item.gatewayno }}</span>
+                </div>
+              </div>
+
+              <div class="flex">
+                <div class="info">
+                  <span class="labels"> 地址：</span>
+                  <span class="contents ciyao" style="font-size:12px"> {{ item.provinceName }}/{{ item.cityName }}/{{ item.countyName }}</span>
+                </div>
+
+              </div>
+              <div class="flex">
+
+                <div class="info">
+                  <span class="labels">报警内容：</span>
+                  <span class="contents ciyao" :class="{ warning: item.alertdetail }"> {{ item.alertdetail || '无'
+                    }}</span>
+                </div>
+              </div>
+            </div>
+            <div style="background-color: #00b1d6; width: 10rem;height: 6rem;">
+
+            </div>
+          </div>
+        </li>
+      </ul>
+    </component>
+  </div>
+  <Reacquire v-else @onclick="getData" style="line-height:200px" />
+
 </template>
 
 <script>
 import { currentGET } from 'api/modules'
+import vueSeamlessScroll from 'vue-seamless-scroll'  // vue2引入方式
+import Kong from '../../components/kong.vue'
 export default {
+  components: { vueSeamlessScroll, Kong },
+
   data() {
     return {
-      options: {},
-      countUserNumData: {
-        lockNum: 0,
-        onlineNum: 0,
-        offlineNum: 0,
-        totalNum: 0
-      },
+      list: [],
       pageflag: true,
-      timer: null
+      defaultOption: {
+        ...this.$store.state.setting.defaultOption,
+        limitMoveNum: 2,
+        singleHeight: 220,
+        step:0,
+      }
+
     };
+  },
+  computed: {
+    sbtxSwiperFlag() {
+      let ssyjSwiper = this.$store.state.setting.ssyjSwiper
+      if (ssyjSwiper) {
+        this.components = vueSeamlessScroll
+      } else {
+        this.components = Kong
+      }
+      return ssyjSwiper
+    }
   },
   created() {
     this.getData()
   },
-  mounted() {
-  },
-  beforeDestroy() {
-    this.clearData()
 
-  },
+  mounted() { },
   methods: {
-    clearData() {
-      if (this.timer) {
-        clearInterval(this.timer)
-        this.timer = null
-      }
-    },
     getData() {
       this.pageflag = true
       // this.pageflag =false
-
-      currentGET('big1').then(res => {
-        //只打印一次
-        if (!this.timer) {
-          console.log("设备总览", res);
-        }
+      currentGET('big5', { limitNum: 50 }).then(res => {
+        console.log('实时预警', res);
         if (res.success) {
-          this.countUserNumData = res.data
-          this.$nextTick(() => {
-            this.init()
-            this.switper()
-          })
-
+          this.list = res.data.list
+          let timer = setTimeout(() => {
+            clearTimeout(timer)
+            this.defaultOption.step=this.$store.state.setting.defaultOption.step
+          }, this.$store.state.setting.defaultOption.waitTime);
         } else {
           this.pageflag = false
-          this.$Message({
-            text: res.msg,
-            type: 'warning'
-          })
+          this.$Message.warning(res.msg)
         }
       })
     },
-    //轮询
-    switper() {
-      if (this.timer) {
-        return
-      }
-      let looper = (a) => {
-        this.getData()
-      };
-      this.timer = setInterval(looper, this.$store.state.setting.echartsAutoTime);
-      let myChart = this.$refs.charts.chart
-      myChart.on('mouseover', params => {
-        this.clearData()
-      });
-      myChart.on('mouseout', params => {
-        this.timer = setInterval(looper, this.$store.state.setting.echartsAutoTime);
-      });
-    },
-    init() {
-      let total = this.countUserNumData.totalNum;
-      let colors = ["#ECA444", "#33A1DB", "#56B557"];
-      let piedata = {
-        name: "用户总览",
-        type: "pie",
-        radius: ["42%", "65%"],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 4,
-          borderColor: "rgba(0,0,0,0)",
-          borderWidth: 2,
-        },
 
-        color: colors,
-        data: [
-          // {
-          //   value: 0,
-          //   name: "告警",
-          //   label: {
-          //     shadowColor: colors[0],
-          //   },
-          // },
-          {
-            value: this.countUserNumData.lockNum,
-            name: "锁定",
-            label: {
-              shadowColor: colors[0],
-            },
-          },
-          {
-            value: this.countUserNumData.onlineNum,
-            name: "在线",
-            label: {
-              shadowColor: colors[2],
-            },
-          },
-          {
-            value: this.countUserNumData.offlineNum,
-            name: "离线",
-            label: {
-              shadowColor: colors[1],
-            },
-          },
-
-
-        ],
-      };
-      this.options = {
-        title: {
-          // zlevel: 0,
-          text: ["{value|" + total + "}", "{name|总数}"].join("\n"),
-          top: "center",
-          left: "center",
-          textStyle: {
-            rich: {
-              value: {
-                color: "#ffffff",
-                fontSize: 24,
-                fontWeight: "bold",
-                lineHeight: 20,
-              },
-              name: {
-                color: "#ffffff",
-                lineHeight: 20,
-              },
-            },
-          },
-        },
-        tooltip: {
-          trigger: "item",
-          backgroundColor: "rgba(0,0,0,.6)",
-          borderColor: "rgba(147, 235, 248, .8)",
-          textStyle: {
-            color: "#FFF",
-          },
-        },
-        legend: {
-          show: false,
-          top: "5%",
-          left: "center",
-        },
-        series: [
-          //展示圆点
-          {
-            ...piedata,
-            tooltip: { show: true },
-            label: {
-              formatter: "   {b|{b}}   \n   {c|{c}个}   {per|{d}%}  ",
-              //   position: "outside",
-              rich: {
-                b: {
-                  color: "#fff",
-                  fontSize: 12,
-                  lineHeight: 26,
-                },
-                c: {
-                  color: "#31ABE3",
-                  fontSize: 14,
-                },
-                per: {
-                  color: "#31ABE3",
-                  fontSize: 14,
-                },
-              },
-            },
-            labelLine: {
-              length: 20, // 第一段线 长度
-              length2: 36, // 第二段线 长度
-              show: true,
-              emphasis: {
-                show: true,
-              },
-            },
-          },
-          {
-            ...piedata,
-            tooltip: { show: true },
-            itemStyle: {},
-            label: {
-              backgroundColor: "auto", //圆点颜色，auto：映射的系列色
-              height: 0,
-              width: 0,
-              lineHeight: 0,
-              borderRadius: 2.5,
-              shadowBlur: 8,
-              shadowColor: "auto",
-              padding: [2.5, -2.5, 2.5, -2.5],
-            },
-            labelLine: {
-              length: 20, // 第一段线 长度
-              length2: 36, // 第二段线 长度
-              show: false,
-            },
-          },
-        ],
-      };
-    },
   },
 };
 </script>
 <style lang='scss' scoped>
+.flexm {
+  display: flex;
+  //margin-right: 20px;
+}
+.right_center {
+  width: 100%;
+  height: 100%;
+
+  .right_center_item {
+    //display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    padding: 10px;
+    font-size: 14px;
+    color: #fff;
+
+
+    .right_img {
+      flex: 3;
+    }
+
+    .doudong {
+      //  vertical-align:middle;
+      overflow: hidden;
+      -webkit-backface-visibility: hidden;
+      -moz-backface-visibility: hidden;
+      -ms-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    .inner_right {
+      flex: 2;
+      position: relative;
+      height: 100%;
+      //修改左边文字的整体宽度
+      width: 300px;
+      line-height: 1.5;
+    }
+
+    .info {
+      margin-right: 10px;
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+
+      .labels {
+        flex-shrink: 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .zhuyao {
+        color: $primary-color;
+        font-size: 15px;
+      }
+
+      .ciyao {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .warning {
+        color: #E6A23C;
+        font-size: 15px;
+      }
+    }
+
+  }
+}
+
+.right_center_wrap {
+  overflow: hidden;
+  width: 100%;
+  height: 200px;
+  margin-top: 25px;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
 </style>

@@ -24,22 +24,13 @@
                   {{ item.gatewayno }}</span
                 >
               </div>
-              <div class="info">
-                <span class="labels">时间：</span>
-                <span class="contents " style="font-size: 12px">
-                  {{ item.createTime }}</span
-                >
-              </div>
             </div>
 
-              <span
-                class="types doudong"
-                :class="{
-                  typeRed: item.onlineState == 0,
-                  typeGreen: item.onlineState == 1,
-                }"
-                >{{ item.onlineState == 1 ? "上线" : "下线" }}</span
-              >
+              <span class="types doudong">
+                <div style="background-color: #00b1d6; width: 8rem;height: 5rem;">
+
+                </div>
+              </span>
 
             <div class="info addresswrap">
               <span class="labels">地址：</span>
@@ -70,7 +61,7 @@ export default {
       defaultOption: {
         ...this.$store.state.setting.defaultOption,
         singleHeight: 240,
-        limitMoveNum: 5, 
+        limitMoveNum: 5,
         step: 0,
       },
     };
@@ -237,7 +228,7 @@ export default {
     }
 
     .types {
-      width: 30px;
+      //width: 30px;
       flex-shrink: 0;
     }
 

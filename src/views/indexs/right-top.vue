@@ -7,15 +7,12 @@
 -->
 <template>
   <Echart
-    id="rightTop"
+    id="leftTop"
     :options="option"
     class="right_top_inner"
     v-if="pageflag"
-    ref="charts"
-  />
-  <Reacquire v-else @onclick="getData" style="line-height: 200px">
-    重新获取
-  </Reacquire>
+    ref="charts"/>
+
 </template>
 
 <script>
@@ -94,7 +91,7 @@ export default {
         xAxis: {
           type: "category",
           data: xData,
-          boundaryGap: false, // 不留白，从原点开始
+          boundaryGap: true, // 不留白，从原点开始
           splitLine: {
             show: true,
             lineStyle: {
@@ -143,7 +140,7 @@ export default {
           show: true,
           left: "10px",
           right: "30px",
-          bottom: "10px",
+          bottom: "25px",
           top: "28px",
           containLabel: true,
           borderColor: "#1F63A3",
@@ -151,11 +148,28 @@ export default {
         series: [
           {
             data: yData,
-            type: "line",
+            type: "bar",
             smooth: true,
             symbol: "none", //去除点
             name: "报警1次数",
             color: "rgba(252,144,16,.7)",
+            showBackground: true,
+            itemStyle: {
+              emphasis: {
+                barBorderRadius:50
+              },
+              normal: {
+                barBorderRadius:50,
+                color: new echarts.graphic.LinearGradient(
+                    0,0,0,1,
+                    [
+                      {offset: 0, color: '#50D99B'},
+                      {offset: 1, color: '#00b8ff'}
+                    ]
+                )
+
+              }
+            },
             areaStyle: {
               normal: {
                 //右，下，左，上
@@ -220,19 +234,32 @@ export default {
           },
           {
             data: yData2,
-            type: "line",
+            type: "bar",
             smooth: true,
             symbol: "none", //去除点
             name: "报警2次数",
             color: "rgba(9,202,243,.7)",
+            showBackground: true,
+            itemStyle: {
+              emphasis: {
+                barBorderRadius:50
+              },
+              normal: {
+                barBorderRadius:50,
+                color: new echarts.graphic.LinearGradient(
+                    0,0,0,1,
+                    [
+                      {offset: 0, color: '#FF3E73'},
+                      {offset: 1, color: '#00b8ff'}
+                    ]
+                )
+
+              }
+            },
             areaStyle: {
               normal: {
                 //右，下，左，上
-                color: new echarts.graphic.LinearGradient(
-                  0,
-                  0,
-                  0,
-                  1,
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1,
                   [
                     {
                       offset: 0,

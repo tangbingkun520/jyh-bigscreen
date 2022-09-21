@@ -10,11 +10,11 @@
     <div class="contetn_left">
       <div class="pagetab">
         <!-- <div class="item">实时监测</div> -->
-        
+
       </div>
       <ItemWrap class="contetn_left-top contetn_lr-item" title="设备总览">
         <LeftTop/>
-    
+
       </ItemWrap>
       <ItemWrap class="contetn_left-center contetn_lr-item" title="用户总览">
         <LeftCenter />
@@ -24,14 +24,11 @@
         title="设备提醒"
         style="padding: 0 10px 16px 10px"
       >
-        <LeftBottom />
+<!--        <LeftBottom />-->
       </ItemWrap>
     </div>
     <div class="contetn_center">
       <CenterMap class="contetn_center_top" />
-      <ItemWrap class="contetn_center-bottom" title="安装计划">
-        <CenterBottom />
-      </ItemWrap>
     </div>
     <div class="contetn_right">
       <ItemWrap
@@ -51,7 +48,7 @@
         class="contetn_left-bottom contetn_lr-item"
         title="数据统计图 "
       >
-        <RightBottom />
+<!--        <RightBottom />-->
       </ItemWrap>
     </div>
   </div>
@@ -80,7 +77,7 @@ export default {
   },
   data() {
     return {
-    
+
     };
   },
   filters: {
@@ -93,7 +90,7 @@ export default {
 
   mounted() {},
   methods: {
-  
+
   },
 };
 </script>
@@ -102,18 +99,18 @@ export default {
 .contents {
   .contetn_left,
   .contetn_right {
-    width: 540px;
+    width: 440px;
     box-sizing: border-box;
     // padding: 16px 0;
   }
 
   .contetn_center {
-    width: 720px;
+    width: 1000px;
   }
 
   //左右两侧 三个块
   .contetn_lr-item {
-    height: 310px;
+    height: 240px;
   }
 
   .contetn_center_top {
@@ -128,7 +125,7 @@ export default {
   }
 
   .contetn_center-bottom {
-    height: 315px;
+    height: 50px;
   }
 
   //左边 右边 结构一样
@@ -139,7 +136,6 @@ export default {
     justify-content: space-around;
     position: relative;
 
-  
   }
 }
 

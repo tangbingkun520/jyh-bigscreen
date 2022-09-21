@@ -10,29 +10,27 @@
     <div class="bg">
       <dv-loading v-if="loading">Loading...</dv-loading>
       <div v-else class="host-body">
-        <!-- 头部 s -->
+        <!-- 头部1 s -->
         <div class="d-flex jc-center title_wrap">
-          <div class="zuojuxing"></div>
-          <div class="youjuxing"></div>
-          <div class="guang"></div>
-          <div class="d-flex jc-center">
-            <div class="title">
-              <span class="title-text">互联网设备可视化平台</span>
-            </div>
-          </div>
+
           <div class="timers ">
 
             {{ dateYear }} {{ dateWeek }} {{ dateDay }}
-            <i class=" blq-icon-shezhi02" style="margin-left:10px" @click="showSetting"></i>
+
           </div>
         </div>
-        <!-- 头部 e-->
+        <!--头部1 e-->
+
         <!-- 内容  s-->
         <router-view></router-view>
         <!-- 内容 e -->
+
+        <div class="d-flex jc-center bottom_wrap">
+
+        </div>
       </div>
     </div>
-    <Setting ref="setting"/>
+
   </div>
 </template>
 
@@ -51,9 +49,6 @@ export default {
       dateYear: null,
       dateWeek: null,
       weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
-
-
-
     };
   },
   filters: {
@@ -62,10 +57,10 @@ export default {
     },
   },
   computed:{
-    
+
   },
   created(){
-   
+
   },
   mounted() {
     this.timeFn();

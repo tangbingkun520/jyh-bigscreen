@@ -15,6 +15,7 @@
     "element-ui": "^2.15.6",
     "sass": "^1.53.0",
     "vue": "^2.6.11",
+    "vue-carousel-3d": "^1.0.1",
     "vue-easytable": "^2.14.0",
     "vue-router": "^3.2.0",
     "vue-seamless-scroll": "^1.1.23",

@@ -8,9 +8,7 @@
 <template>
   <div class="centermap">
     <div class="maptitle">
-      <div class="zuo"></div>
-      <span class="titletext">{{ maptitle }}</span>
-      <div class="you"></div>
+
     </div>
     <div class="mapwrap">
        <dv-border-box-13 >
@@ -377,7 +375,7 @@ export default {
   }
 
   .mapwrap {
-   
+
     height: 548px;
     width: 100%;
     // padding: 0 0 10px 0;

@@ -1,229 +1,232 @@
 <!--
  * @Author: daidai
- * @Date: 2022-02-28 16:16:42
+ * @Date: 2022-03-01 14:13:04
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2022-04-28 09:50:07
- * @FilePath: \web-pc\src\pages\big-screen\view\indexs\left-center.vue
+ * @LastEditTime: 2022-05-07 11:17:49
+ * @FilePath: \web-pc\src\pages\big-screen\view\indexs\right-top.vue
 -->
 <template>
-    <ul class="user_Overview flex" v-if="pageflag">
-        <li class="user_Overview-item" style="color: #00fdfa">
-            <div class="user_Overview_nums allnum ">
-                <dv-digital-flop :config="config" style="width:100%;height:100%;" />
-            </div>
-            <p>总设备数</p>
-        </li>
-        <li class="user_Overview-item" style="color: #07f7a8">
-            <div class="user_Overview_nums online">
-                <dv-digital-flop :config="onlineconfig" style="width:100%;height:100%;" />
-            </div>
-            <p>在线数</p>
-        </li>
-        <li class="user_Overview-item" style="color: #e3b337">
-            <div class="user_Overview_nums offline">
-                <dv-digital-flop :config="offlineconfig" style="width:100%;height:100%;" />
+  <Echart
+      id="leftTop"
+      :options="option"
+      class="right_top_inner"
+      v-if="pageflag"
+      ref="charts"/>
 
-            </div>
-            <p>掉线数</p>
-        </li>
-        <li class="user_Overview-item" style="color: #f5023d">
-            <div class="user_Overview_nums laramnum">
-                <dv-digital-flop :config="laramnumconfig" style="width:100%;height:100%;" />
-            </div>
-            <p>告警次数</p>
-        </li>
-    </ul>
-    <Reacquire v-else @onclick="getData" line-height="200px">
-        重新获取
-    </Reacquire>
 </template>
 
 <script>
-import { currentGET } from 'api/modules'
-let style = {
-    fontSize: 24
-}
+import { currentGET } from "api/modules";
+
 export default {
-    data() {
-        return {
-            options: {},
-            userOverview: {
-                alarmNum: 0,
-                offlineNum: 0,
-                onlineNum: 0,
-                totalNum: 0,
-            },
-            pageflag: true,
-            timer: null,
-            config: {
-                number: [100],
-                content: '{nt}',
-                style: {
-                    ...style,
-                    // stroke: "#00fdfa",
-                    fill: "#00fdfa",
-                },
-            },
-            onlineconfig: {
-                number: [0],
-                content: '{nt}',
-                style: {
-                    ...style,
-                    // stroke: "#07f7a8",
-                    fill: "#07f7a8",
-                },
-            },
-            offlineconfig: {
-                number: [0],
-                content: '{nt}',
-                style: {
-                    ...style,
-                    // stroke: "#e3b337",
-                    fill: "#e3b337",
-                },
-            },
-            laramnumconfig: {
-                number: [0],
-                content: '{nt}',
-                style: {
-                    ...style,
-                    // stroke: "#f5023d",
-                    fill: "#f5023d",
-                },
-            }
+  data() {
+    return {
+      option: {},
+      pageflag: false,
+      timer: null,
+    };
+  },
+  created() {
+    this.getData();
+  },
 
-        };
+  mounted() {},
+  beforeDestroy() {
+    this.clearData();
+  },
+  methods: {
+    clearData() {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
     },
-    filters: {
-        numsFilter(msg) {
-            return msg || 0;
+    getData() {
+      this.pageflag = true;
+      // this.pageflag =false
+      currentGET("big4").then((res) => {
+        if (!this.timer) {
+          console.log("报警次数", res);
+        }
+        if (res.success) {
+          this.countUserNumData = res.data;
+          this.$nextTick(() => {
+            this.init(res.data.dateList, res.data.numList, res.data.numList2),
+                this.switper();
+          });
+        } else {
+          this.pageflag = false;
+          this.$Message({
+            text: res.msg,
+            type: "warning",
+          });
+        }
+      });
+    },
+    //轮询
+    switper() {
+      if (this.timer) {
+        return;
+      }
+      let looper = (a) => {
+        this.getData();
+      };
+      this.timer = setInterval(
+          looper,
+          this.$store.state.setting.echartsAutoTime
+      );
+      let myChart = this.$refs.charts.chart;
+      myChart.on("mouseover", (params) => {
+        this.clearData();
+      });
+      myChart.on("mouseout", (params) => {
+        this.timer = setInterval(
+            looper,
+            this.$store.state.setting.echartsAutoTime
+        );
+      });
+    },
+    init(xData, yData, yData2) {
+      this.option = {
+        xAxis: {
+          type: "category",
+          data: xData,
+          boundaryGap: false, // 不留白，从原点开始
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: "rgba(31,99,163,.2)",
+            },
+          },
+          axisLine: {
+            // show:false,
+            lineStyle: {
+              color: "rgba(31,99,163,.1)",
+            },
+          },
+          axisLabel: {
+            color: "#7EB7FD",
+            fontWeight: "500",
+          },
         },
-    },
-    created() {
-        this.getData()
-    },
-    mounted() {
-    },
-    beforeDestroy() {
-        this.clearData()
-
-    },
-    methods: {
-        clearData() {
-            if (this.timer) {
-                clearInterval(this.timer)
-                this.timer = null
-            }
+        yAxis: {
+          type: "value",
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: "rgba(31,99,163,.2)",
+            },
+          },
+          axisLine: {
+            lineStyle: {
+              color: "rgba(31,99,163,.1)",
+            },
+          },
+          axisLabel: {
+            color: "#7EB7FD",
+            fontWeight: "500",
+          },
         },
-        getData() {
-            this.pageflag = true;
-            currentGET("big2").then((res) => {
-                if (!this.timer) {
-                    console.log("设备总览", res);
-                }
-                if (res.success) {
-                    this.userOverview = res.data;
-                    this.onlineconfig = {
-                        ...this.onlineconfig,
-                        number: [res.data.onlineNum]
-                    }
-                    this.config = {
-                        ...this.config,
-                        number: [res.data.totalNum]
-                    }
-                    this.offlineconfig = {
-                        ...this.offlineconfig,
-                        number: [res.data.offlineNum]
-                    }
-                    this.laramnumconfig = {
-                        ...this.laramnumconfig,
-                        number: [res.data.alarmNum]
-                    }
-                    this.switper()
-                } else {
-                    this.pageflag = false;
-                    this.$Message.warning(res.msg);
-                }
-            });
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(0,0,0,.6)",
+          borderColor: "rgba(147, 235, 248, .8)",
+          textStyle: {
+            color: "#FFF",
+          },
         },
-        //轮询
-        switper() {
-            if (this.timer) {
-                return
-            }
-            let looper = (a) => {
-                this.getData()
-            };
-            this.timer = setInterval(looper, this.$store.state.setting.echartsAutoTime);
+        grid: {
+          //布局
+          show: true,
+          left: "10px",
+          right: "30px",
+          bottom: "22px",
+          top: "28px",
+          containLabel: true,
+          borderColor: "#1F63A3",
         },
+        series: [
+          {
+            data: yData,
+            type: "line",
+            smooth: true,
+            symbol: "none", //去除点
+            name: "报警1次数",
+            color: "rgba(252,144,16,.7)",
+            areaStyle: {
+              normal: {
+                //右，下，左，上
+                color: new echarts.graphic.LinearGradient(
+                    0,
+                    0,
+                    0,
+                    1,
+                    [
+                      {
+                        offset: 0,
+                        color: "rgba(252,144,16,.7)",
+                      },
+                      {
+                        offset: 0.8,
+                        color: "rgba(252,144,16,.0)",
+                      },
+                      {
+                        offset: 1,
+                        color: "rgba(252,144,16,.0)",
+                      },
+                    ],
+                    false
+                ),
+              },
+            },
+            markPoint: {
+              data: [
+                {
+                  name: "最大值",
+                  type: "max",
+                  valueDim: "y",
+                  symbol: "rect",
+                  symbolSize: [60, 26],
+                  symbolOffset: [0, -20],
+                  itemStyle: {
+                    color: "rgba(0,0,0,0)",
+                  },
+                  label: {
+                    color: "#FC9010",
+                    backgroundColor: "rgba(252,144,16,0.1)",
+                    borderRadius: 6,
+                    padding: [7, 14],
+                    borderWidth: 0.5,
+                    borderColor: "rgba(252,144,16,.5)",
+                    formatter: "报警1：{c}",
+                  },
+                },
+                {
+                  name: "最大值",
+                  type: "max",
+                  valueDim: "y",
+                  symbol: "circle",
+                  symbolSize: 6,
+                  itemStyle: {
+                    color: "#FC9010",
+                    shadowColor: "#FC9010",
+                    shadowBlur: 8,
+                  },
+                  label: {
+                    formatter: "",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      };
     },
+  },
 };
 </script>
 <style lang='scss' scoped>
-.user_Overview {
-    li {
-        flex: 1;
-
-        p {
-            text-align: center;
-            height: 16px;
-            font-size: 16px;
-        }
-
-        .user_Overview_nums {
-            width: 100px;
-            height: 100px;
-            text-align: center;
-            line-height: 100px;
-            font-size: 22px;
-            margin: 50px auto 30px;
-            background-size: cover;
-            background-position: center center;
-            position: relative;
-
-            &::before {
-                content: '';
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-            }
-
-            &.bgdonghua::before {
-                animation: rotating 14s linear infinite;
-            }
-        }
-
-        .allnum {
-
-            // background-image: url("../../assets/img/left_top_lan.png");
-            &::before {
-                background-image: url("../../assets/img/left_top_lan.png");
-
-            }
-        }
-
-        .online {
-            &::before {
-                background-image: url("../../assets/img/left_top_lv.png");
-
-            }
-        }
-
-        .offline {
-            &::before {
-                background-image: url("../../assets/img/left_top_huang.png");
-
-            }
-        }
-
-        .laramnum {
-            &::before {
-                background-image: url("../../assets/img/left_top_hong.png");
-
-            }
-        }
-    }
+.right_top_inner {
+  margin-top: -8px;
 }
 </style>

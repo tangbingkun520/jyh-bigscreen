@@ -10,44 +10,33 @@
     <component :is="components" :data="list" :class-option="defaultOption">
       <ul class="right_center ">
         <li class="right_center_item" v-for="(item, i) in list" :key="i">
-          <span class="orderNum">{{ i + 1 }}</span>
-          <div class="inner_right">
-            <div class="dibu"></div>
-            <div class="flex">
-              <div class="info">
-                <span class="labels ">设备ID：</span>
-                <span class="contents zhuyao"> {{ item.gatewayno }}</span>
+          <div class="flexm">
+            <div class="inner_right">
+              <div class="flex">
+                <div class="info">
+                  <span class="labels ">设备ID：</span>
+                  <span class="contents zhuyao"> {{ item.gatewayno }}</span>
+                </div>
               </div>
-              <div class="info">
-                <span class="labels">型号：</span>
-                <span class="contents "> {{ item.terminalno }}</span>
+
+              <div class="flex">
+                <div class="info">
+                  <span class="labels"> 地址：</span>
+                  <span class="contents ciyao" style="font-size:12px"> {{ item.provinceName }}/{{ item.cityName }}/{{ item.countyName }}</span>
+                </div>
+
               </div>
-              <div class="info">
-                <span class="labels">告警值：</span>
-                <span class="contents warning"> {{ item.alertvalue | montionFilter }}</span>
+              <div class="flex">
+
+                <div class="info">
+                  <span class="labels">报警内容：</span>
+                  <span class="contents ciyao" :class="{ warning: item.alertdetail }"> {{ item.alertdetail || '无'
+                    }}</span>
+                </div>
               </div>
             </div>
+            <div style="background-color: #00b1d6; width: 10rem;height: 6rem;">
 
-
-            <div class="flex">
-
-              <div class="info">
-                <span class="labels"> 地址：</span>
-                <span class="contents ciyao" style="font-size:12px"> {{ item.provinceName }}/{{ item.cityName }}/{{ item.countyName }}</span>
-              </div>
-              <div class="info time">
-                <span class="labels">时间：</span>
-                <span class="contents" style="font-size:12px"> {{ item.createtime }}</span>
-              </div>
-
-            </div>
-            <div class="flex">
-
-              <div class="info">
-                <span class="labels">报警内容：</span>
-                <span class="contents ciyao" :class="{ warning: item.alertdetail }"> {{ item.alertdetail || '无'
-                }}</span>
-              </div>
             </div>
           </div>
         </li>
@@ -71,8 +60,8 @@ export default {
       pageflag: true,
       defaultOption: {
         ...this.$store.state.setting.defaultOption,
-        limitMoveNum: 3, 
-        singleHeight: 250, 
+        limitMoveNum: 3,
+        singleHeight: 250,
         step:0,
       }
 
@@ -117,12 +106,16 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
+.flexm {
+  display: flex;
+  margin-right: 20px;
+}
 .right_center {
   width: 100%;
   height: 100%;
 
   .right_center_item {
-    display: flex;
+    //display: flex;
     align-items: center;
     justify-content: center;
     height: auto;
@@ -130,31 +123,32 @@ export default {
     font-size: 14px;
     color: #fff;
 
-    .orderNum {
-      margin: 0 20px 0 -20px;
+
+    .right_img {
+      flex: 3;
     }
 
+    .doudong {
+      //  vertical-align:middle;
+      overflow: hidden;
+      -webkit-backface-visibility: hidden;
+      -moz-backface-visibility: hidden;
+      -ms-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
 
     .inner_right {
+      flex: 2;
       position: relative;
       height: 100%;
-      width: 400px;
-      flex-shrink: 0;
-      line-height: 1.5;
-
-      .dibu {
-        position: absolute;
-        height: 2px;
-        width: 104%;
-        background-image: url("../../assets/img/zuo_xuxian.png");
-        bottom: -12px;
-        left: -2%;
-        background-size: cover;
-      }
+      //修改左边文字的整体宽度
+      width: 300px;
+      line-height: 2;
     }
 
     .info {
       margin-right: 10px;
+      margin-left: 10px;
       display: flex;
       align-items: center;
 
